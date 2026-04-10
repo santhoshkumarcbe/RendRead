@@ -1,10 +1,17 @@
-# Use lightweight Java image
+
+# Stage 1: Build
+FROM gradle:8.5-jdk17 AS build
+
+WORKDIR /app
+COPY . .
+
+RUN gradle build -x test
+
+# Stage 2: Run
 FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
-
-# ✅ Correct path for Gradle
-COPY build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
